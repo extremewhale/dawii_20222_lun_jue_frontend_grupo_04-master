@@ -1,0 +1,239 @@
+<app-menu></app-menu>
+<div style="padding: 2%">
+        <div class="container" >
+                <h5>Crud de Libro</h5>
+            
+                <div class="col-md-23" style="margin-top: 3%">
+            
+            
+                    <div class="row" style="height: 80px">
+                        <div class="col-md-4">
+                            <input [(ngModel)] = "filtro"  class="form-control"  id="id_txt_filtro" name="filtro" placeholder="Ingrese el Titulo" type="text" maxlength="30" />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" (click)="consulta()" class="btn btn-primary btn-sm" id="id_btn_filtrar" style="width: 150px">Filtrar</button>
+                        </div>
+                        <div class="col-md-2">
+                            <button  type="button" data-toggle='modal' data-target="#idModalRegistrar" class='btn btn-primary btn-sm' style="width: 150px">Registrar</button>
+                        </div>
+                    </div>
+            
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="content">
+            
+                                <table id="id_table" class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 5%">#</th>
+                                            <th style="width: 30%">Titulo</th>
+                                            <th style="width: 10%">Anio</th>
+                                            <th style="width: 24%">Serie</th>
+                                            <th style="width: 10%">Estado</th>
+                                            <th style="width: 24%">Categoria</th>
+                                            <th style="width: 7%"></th>
+                                            <th style="width: 7%"></th>
+                                            <th style="width: 7%"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let x of libros">
+                                            <td>{{ x.idLibro }}</td>
+                                            <td>{{ x.titulo }}</td>
+                                            <td>{{ x.anio }}</td>
+                                            <td>{{ x.serie }}</td>
+                                            <td>{{ x.estado==1?"Activo":"Inactivo"}}</td>
+                                            <td>{{ x.categoria!.descripcion }} </td>
+                                            <td>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" 
+                                                            id="idEstado_{{ x.idLibro }}" name="estado" 
+                                                            [checked]="x.estado==1?true:false" 
+                                                            (change)="actualizaEstado(x)"  />         
+                                                    <label class="custom-control-label" for="idEstado_{{ x.idLibro }}"></label>
+                                                </div>  
+                                            </td>
+                                            <td><button type="button" (click)="busca(x)" style="width: 90px" 
+                                                            class="btn btn-success btn-sm"
+                                                            data-toggle="modal" 
+                                                            data-target="#idModalActualizar">Editar</button>
+                                            </td>
+                                            <td><button  (click)="elimina(x)" type="button" style="width: 90px" 
+                                                        class="btn btn-danger btn-sm"  >Eliminar</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+            
+                <div class="modal fade"  id="idModalRegistrar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            
+                    <div class="modal-dialog" style="max-width: 70%;">
+                        <div class="modal-content" >
+            
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Registro de Libro</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            
+                            <div class="modal-body">
+                                <form class="content" [formGroup]="formsRegistra">
+                                    <div class="submit-form">
+                                        
+                                            <div  class="row">
+                                                <div class="col-lg-10">
+                                                    <label for="id_reg_nombre">Titulo</label>
+                                                    <input type="text" formControlName="validaNombre" [(ngModel)]="libro.titulo" placeholder="Ingrese el nombre" class="form-control" name="nombre" id="id_reg_nombre" />
+                                                    
+                                                </div>
+                                                
+                                                <div class="col-lg-2">
+                                                    <label for="id_reg_serie">SERIE</label>
+                                                    <input type="text" formControlName="validaSerie"  [(ngModel)]="libro.serie"  placeholder="Ingrese SERIE" class="form-control" name="serie" id="id_reg_serie"  />
+                                                    
+                                                </div>
+
+                                                <div class="col-lg-2">
+                                                        <label for="id_reg_anio">AÑO</label>
+                                                        <input type="text" formControlName="validaAnio" class="form-control" name="anio" id="id_reg_anio"
+                                                        [(ngModel)]="libro.anio" />
+                                                        
+                                                    </div>
+                                                    
+                                                    <div class="col-lg-6">
+                                                        <label for="id_reg_departamento">Categoria</label>
+                                                        <select id="Categoria" formControlName="validaCategoria"  name="categoria" class="form-control" [(ngModel)] = "libro.categoria!.idCategoria">
+                                                                <option value="0">[Seleccione]</option>
+                                                                <option *ngFor="let aux of categorias" value="{{aux.idCategoria}}">
+                                                                  {{aux.descripcion}}
+                                                                </option>
+                                                              </select>
+                                                        
+                                                    </div>
+                                                    
+                                            </div>
+            
+            
+                                            
+            
+                                    </div> 
+                                    <div class="modal-footer">
+                                        <button type="reset" class="btn btn-secondary btn-sm" style="width: 100px;">Limpiar</button>
+                                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" id="btn_reg_cerrar" style="width: 100px;" >Cerrar</button>
+                                        <div class="form-group text-center">
+                                            <div class="col-lg-12">
+                                                <button  (click)="registra()"  id="id_reg_registra"   class="btn btn-success btn-sm "style="width: 100px;" [disabled]="submitted && formsRegistra.invalid">Registrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+            
+                           
+                                </form>
+                            </div>
+            
+            
+            
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="modal fade" id="idModalActualizar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="max-width: 80%;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Actualización de docente</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                     <span aria-hidden="true">&times;</span>
+                                 </button>
+                            </div>
+
+
+
+                            <div class="modal-body">
+            
+                                <form class="content" [formGroup]="formsActualiza">
+                                    <div class="submit-form">
+            
+                                        <div  class="row">
+                                            <div class="col-lg-8">
+                                                <label for="id_act_nombre">Titulo</label>
+                                                <input  formControlName="validaNombre" type="text" [(ngModel)]="libro.titulo" placeholder="Ingrese el titulo" class="form-control" name="nombre" id="id_act_nombre" />
+                                                <div *ngIf="submitted && formsActualiza.controls.validaNombre.errors" class="invalid">
+                                                    <ul>
+                                                        <li>El nombre es obligatorio</li>    
+                                                        <li>El nombre es de 3 a 30 caracteres</li>    
+                                                    </ul>
+                                                 </div> 
+                                            </div>
+                
+                                            <div class="col-lg-2">
+                                                <label for="id_act_estado">Estado</label>
+                                                <select  formControlName="validaEstado" id="id_act_estado" [(ngModel)]="libro.estado"  name="estado" class="form-control">
+                                                    <option value="-1"> [Seleccione] </option>
+                                                    <option value="1"> Activo </option>
+                                                    <option value="0"> Inactivo </option>
+                                                </select>
+                                                <div *ngIf="submitted && formsActualiza.controls.validaEstado.errors" class="invalid">
+                                                    <ul>
+                                                        <li>El estado es obligatorio</li>    
+                                                    </ul>
+                                                 </div>
+                                            </div>
+            
+                                            <div class="col-lg-2">
+                                                <label for="id_act_dni">Serie</label>
+                                                <input formControlName="validaSerie" type="text" [(ngModel)]="libro.serie"  placeholder="Ingrese Serie" class="form-control" name="serie" id="id_act_serie" />
+                                                <div *ngIf="submitted && formsActualiza.controls.validaSerie.errors" class="invalid">
+                                                    <ul>
+                                                        <li>La serie</li>    
+                                                        <li>La serie</li>    
+                                                    </ul>
+                                                 </div>
+                                            </div>
+                                        </div>
+                
+                
+                                            <div class="col-lg-4">
+                                                <label for="id_act_categoria">Categoria</label>
+                                                <select formControlName="validaCategoria"  [(ngModel)] = "libro.categoria!.idCategoria" id="id_act_categoria" name="categoria" class="form-control">
+                                                    <option value="-1"> [Seleccione] </option>
+                                                    <option *ngFor="let aux of categorias"    value="{{ aux.idCategoria }}">
+                                                        {{ aux.descripcion }}
+                                                    </option> 
+                                                </select>
+                                                <div *ngIf="submitted && formsActualiza.controls.validaCategoria.errors" class="invalid">
+                                                    <ul>
+                                                        <li>La categoria es obligatorio</li>    
+                                                    </ul>
+                                                 </div>
+                                            </div>
+                                        </div> 
+        
+            
+                                    <div class="modal-footer">
+                                        <button type="reset" class="btn btn-secondary btn-sm" style="width: 100px;">Limpiar</button>
+                                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" id="btn_act_cerrar" style="width: 100px;">Cerrar</button>
+                                        <div class="form-group text-center">
+                                            <div class="col-lg-12">
+                                                <button id="id_act_actualiza" (click)="actualiza()" class="btn btn-success btn-sm" style="width: 100px" [disabled]="submitted && formsActualiza.invalid">Actualizar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+            
+            
+            
+            
+            
+                            </div>
+            
+                        </div>
+                    </div>
+                </div>
+</div>

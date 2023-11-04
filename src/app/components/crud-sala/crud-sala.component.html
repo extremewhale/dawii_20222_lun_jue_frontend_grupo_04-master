@@ -1,0 +1,304 @@
+<app-menu></app-menu>
+        <div class="ml-3 mr-3">
+ 
+                     <div class="row">
+                        <div class="col-lg-12">
+                            <h3>Crud de Sala</h3>
+                        </div>
+                    </div>
+              
+                    <div class="row mt-3 ml-3 mr-3 form-group" >
+                            <label for="recursos" class="col-form-label">Recursos</label>
+                            <div class="col-lg-2">                        
+                                <input type="text" class="form-control" name="recursos" id="recursos"  [(ngModel)]= "recursos" />
+                        </div>
+    
+                            <div class="col-lg-1">
+                                <button class="btn btn-success" (click)="consultaSala()"   >Filtrar</button>
+                            </div>
+                            <div class="col-lg-1">
+                                <button class="btn btn-success" type="button" data-toggle='modal' data-target="#idModalRegistrar"  style="width: 150px">Registrar</button>
+                            </div>
+                     </div>
+           
+                     <div class="row mt-5">
+                            <table class="table table-hover ml-3 mr-3">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th style="width:10%">Numero</th>
+                                        <th style="width:10%">Piso</th>
+                                        <th style="width:10%">#Alumnos</th>
+                                        <th style="width:30%">Recursos</th>
+                                        <th style="width:30%">Fecha Registro</th>
+                                        <th style="width:20%">Estado</th>
+                                        <th style="width: 7%"></th>
+                                        <th style="width: 7%"></th>
+                                        <th style="width: 7%"></th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody class="table-striped">
+                                      <tr *ngFor="let aux of listaSalas"> 
+                                         <td>{{ aux.idSala }}</td>   
+                                         <td>{{ aux.numero }}</td>  
+                                         <td>{{ aux.piso }}</td>                                   
+                                         <td>{{ aux.numAlumnos }}</td>
+                                         <td>{{ aux.recursos }}</td>
+                                         <td>{{ aux.fechaRegistro }}</td>  
+                                           
+                                         <td>{{ aux.estado == 1 ? "Activo":"Inactivo" }}</td> 
+                                         <td>
+                                                <div class="custom-control custom-switch">
+                                                    <input type="checkbox" class="custom-control-input" 
+                                                            id="idEstado_{{ aux.idSala }}" name="estado" 
+                                                            [checked]="aux.estado==1?true:false" 
+                                                            (change)="actualizaEstado(aux)"  />         
+                                                    <label class="custom-control-label" for="idEstado_{{ aux.idSala }}"></label>
+                                                </div>  
+                                            </td>
+                                            <td><button type="button" (click)="busca(aux)" style="width: 90px" 
+                                                            class="btn btn-success btn-sm"
+                                                            data-toggle="modal" 
+                                                            data-target="#idModalActualizar">Editar</button>
+                                            </td>
+                                            <td><button  (click)="elimina(aux)" type="button" style="width: 90px" 
+                                                        class="btn btn-danger btn-sm"  >Eliminar</button></td>
+                                        </tr>     
+                                </tbody>
+                            </table> 
+                            
+                        </div> 
+                        
+                        <div class="modal fade"  id="idModalRegistrar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    
+                                <div class="modal-dialog" style="max-width: 70%;">
+                                    <div class="modal-content" >
+                        
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Registro de Sala</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="modal-body">
+                                            <form class="content" [formGroup]="formsRegistra">
+                                                <div class="submit-form">
+                                                    
+                                                        <div  class="row">
+                                                            <div class="col-lg-10">
+                                                                <label for="id_reg_numero">Numero</label>
+                                                                <input type="text" formControlName="validaNumero" [(ngModel)]="sala.numero" placeholder="Ingrese el numero" class="form-control" name="numero" id="id_reg_numero" />
+                                                                <div *ngIf="submitted && formsRegistra.controls.validaNumero.errors" class="invalid">       
+                                                                    <ul>
+                                                                        <li>El numero es obligatorio</li>      
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div class="col-lg-2">
+                                                                <label for="id_reg_piso">Piso</label>
+                                                                <input type="text" formControlName="validaPiso" [(ngModel)]="sala.piso" placeholder="Ingrese el piso" class="form-control" name="piso" id="id_reg_piso"  />
+                                                                <div *ngIf="submitted && formsRegistra.controls.validaPiso.errors" class="invalid">
+                                                                    <ul>
+                                                                        <li>El piso es obligatorio</li>      
+                                                                    </ul>
+                                                                 </div>
+                                                            </div>
+                                                            <div class="col-lg-2">
+                                                                <label for="id_reg_numAlumnos">Alumnos</label>
+                                                                <input type="text" formControlName="validanumAlumnos" [(ngModel)]="sala.numAlumnos" placeholder="Ingrese #Alumnos" class="form-control" name="numAlumnos" id="id_reg_numAlumnos"  />
+                                                                <div *ngIf="submitted && formsRegistra.controls.validanumAlumnos.errors" class="invalid">
+                                                                    <ul>
+                                                                        <li>El #alumnos es obligatorio</li>      
+                                                                    </ul>
+                                                                 </div>
+                                                            </div>
+                                                            <div class="col-lg-2">
+                                                                <label for="id_reg_recursos">Recursos</label>
+                                                                <input type="text" formControlName="validaRecursos" [(ngModel)]="sala.recursos" placeholder="Ingrese el recurso" class="form-control" name="recursos" id="id_reg_recursos"  />
+                                                                <div *ngIf="submitted && formsRegistra.controls.validaRecursos.errors" class="invalid">
+                                                                    <ul>
+                                                                        <li>El recurso es obligatorio</li>    
+                                                                        <li>El nombre es de 3 a 30 caracteres</li>    
+                                                                    </ul>
+                                                                 </div>
+                                                            </div>
+
+                                                           
+                                                          
+                                                            <!--
+                                                            <div class="col-lg-2">
+                                                                <label for="id_reg_fechaRegistro">Fecha Registro</label>
+                                                                <input type="text" formControlName="validaFecha" [(ngModel)]="sala.fechaRegistro" placeholder="Ingresela fecha" class="form-control" name="fechaRegistro" id="id_reg_fechaRegistro"  />
+                                                                <div *ngIf="submitted && formsRegistra.controls.validaFecha.errors" class="invalid">
+                                                                    <ul>
+                                                                        <li>El recurso es obligatorio</li>       
+                                                                    </ul>
+                                                                 </div>
+                                                            </div>-->
+                                                            
+                                                        
+                                                            
+                                                        </div>
+
+                    
+                        
+                                                        <div class="row" style="margin-top: 5%">
+                                                            
+                                                            <div class="col-lg-4">
+                                                                <label for="id_reg_sede">Sede</label>
+                                                                   
+                                                                <select formControlName="validaSede"  [(ngModel)]="sala.sede!.idSede"  id="id_reg_sede" name="sede" class="form-control">
+                                                                        <option value="-1">[Seleccione]</option>
+                                                                        <option *ngFor="let aux of lstSede" value="{{aux.idSede}}">
+                                                                          {{aux.nombre}}
+                                                                    </option>    
+                                                                </select>
+                                                                <div *ngIf="submitted && formsRegistra.controls.validaSede.errors" class="invalid">
+                                                                    <ul>
+                                                                        <li>La Sede es obligatorio</li>    
+                                                                    </ul>
+                                                                 </div>
+                                                            </div>
+                                                       
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="reset" class="btn btn-secondary btn-sm" style="width: 100px;">Limpiar</button>
+                                                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" id="btn_reg_cerrar" style="width: 100px;">Cerrar</button>
+                                                            <div class="form-group text-center">
+                                                                <div class="col-lg-12">
+                                                                    <button  (click)="registra()"  id="id_reg_registra"   class="btn btn-success btn-sm "style="width: 100px;" [disabled]="submitted && formsRegistra.invalid">Registrar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                </div>  
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>  
+                        <div class="modal fade"  id="idModalActualizar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    
+                            <div class="modal-dialog" style="max-width: 70%;">
+                                <div class="modal-content" >
+                    
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel2">Actualiza de Sala</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="modal-body">
+                                        <form class="content" [formGroup]="formsActualiza">
+                                            <div class="submit-form">
+                                                
+                                                    <div  class="row">
+                                                        <div class="col-lg-10">
+                                                            <label for="id_act_numero">Numero</label>
+                                                            <input type="text" formControlName="validaNumero" [(ngModel)]="sala.numero" placeholder="Ingrese el numero" class="form-control" name="numero" id="id_act_numero" />
+                                                            <div *ngIf="submitted && formsActualiza.controls.validaNumero.errors" class="invalid">       
+                                                                <ul>
+                                                                    <li>El numero es obligatorio</li>      
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div class="col-lg-2">
+                                                            <label for="id_act_piso">Piso</label>
+                                                            <input type="text" formControlName="validaPiso" [(ngModel)]="sala.piso" placeholder="Ingrese el piso" class="form-control" name="piso" id="id_act_piso"  />
+                                                            <div *ngIf="submitted && formsActualiza.controls.validaPiso.errors" class="invalid">
+                                                                <ul>
+                                                                    <li>El piso es obligatorio</li>      
+                                                                </ul>
+                                                             </div>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <label for="id_act_numAlumnos">Alumnos</label>
+                                                            <input type="text" formControlName="validanumAlumnos" [(ngModel)]="sala.numAlumnos" placeholder="Ingrese #Alumnos" class="form-control" name="numAlumnos" id="id_act_numAlumnos"  />
+                                                            <div *ngIf="submitted && formsActualiza.controls.validanumAlumnos.errors" class="invalid">
+                                                                <ul>
+                                                                    <li>El #alumnos es obligatorio</li>      
+                                                                </ul>
+                                                             </div>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <label for="id_act_recursos">Recursos</label>
+                                                            <input type="text" formControlName="validaRecursos" [(ngModel)]="sala.recursos" placeholder="Ingrese el recurso" class="form-control" name="recursos" id="id_act_recursos"  />
+                                                            <div *ngIf="submitted && formsActualiza.controls.validaRecursos.errors" class="invalid">
+                                                                <ul>
+                                                                    <li>El recurso es obligatorio</li>    
+                                                                    <li>El nombre es de 3 a 30 caracteres</li>    
+                                                                </ul>
+                                                             </div>
+                                                        </div>
+                                                        <div class="col-lg-2">
+                                                            <label for="id_act_estado">Estado</label>
+                                                            <select  formControlName="validaEstado" id="id_act_estado" [(ngModel)]="sala.estado"  name="estado" class="form-control">
+                                                                <option value="-1"> [Seleccione] </option>
+                                                                <option value="1"> Activo </option>
+                                                                <option value="0"> Inactivo </option>
+                                                            </select>
+                                                            <div *ngIf="submitted && formsActualiza.controls.validaEstado.errors" class="invalid">
+                                                                <ul>
+                                                                    <li>El estado es obligatorio</li>    
+                                                                </ul>
+                                                             </div>
+                                                        </div>
+
+                                                       
+                                                      
+
+                                                        <div class="col-lg-2">
+                                                            <label for="id_act_fechaRegistro">Fecha Registro</label>
+                                                            <input type="text" formControlName="validaFecha" [(ngModel)]="sala.fechaRegistro" placeholder="Ingresela fecha" class="form-control" name="fechaRegistro" id="id_act_fechaRegistro"  />
+                                                            <div *ngIf="submitted && formsActualiza.controls.validaFecha.errors" class="invalid">
+                                                                <ul>
+                                                                    <li>El recurso es obligatorio</li>       
+                                                                </ul>
+                                                             </div>
+                                                        </div>
+                                                        
+                                                    
+                                                        
+                                                    </div>
+
+                
+                    
+                                                    <div class="row" style="margin-top: 5%">
+                                                        
+                                                        <div class="col-lg-4">
+                                                            <label for="id_act_sede">Sede</label>
+                                                               
+                                                            <select formControlName="validaSede"  [(ngModel)]="sala.sede!.idSede"  id="id_act_sede" name="sede" class="form-control">
+                                                                    <option value="-1">[Seleccione]</option>
+                                                                    <option *ngFor="let aux of lstSede" value="{{aux.idSede}}">
+                                                                      {{aux.nombre}}
+                                                                </option>    
+                                                            </select>
+                                                            <div *ngIf="submitted && formsActualiza.controls.validaSede.errors" class="invalid">
+                                                                <ul>
+                                                                    <li>La Sede es obligatorio</li>    
+                                                                </ul>
+                                                             </div>
+                                                        </div>
+                                                   
+                                                    </div>
+                                                    
+                                                    <div class="modal-footer">
+                                                       <!-- <button type="reset" class="btn btn-secondary btn-sm" style="width: 100px;">Limpiar</button>-->
+                                                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal" id="btn_act_cerrar" style="width: 100px;">Cerrar</button>
+                                                        <div class="form-group text-center">
+                                                            <div class="col-lg-12">
+                                                                <button  (click)="actualiza()"  id="id_act_actualiza"   class="btn btn-success btn-sm "style="width: 100px;" [disabled]="submitted && formsActualiza.invalid">Actualizar</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            </div>  
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>  

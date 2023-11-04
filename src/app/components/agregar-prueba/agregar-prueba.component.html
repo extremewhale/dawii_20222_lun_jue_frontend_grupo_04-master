@@ -1,0 +1,39 @@
+<app-menu></app-menu>
+<div style="padding: 2%">
+    <form class="content" (submit)="registraPrueba()" >
+        <div class="submit-form" >
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h5>Registra prueba</h5>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 3%">
+                <div class="col-lg-9">
+                    <label for="nombre">Descripción:</label>
+                    <input type="text" class="form-control" name="decripcion" id="decripcion"
+                        [(ngModel)]="prueba.descripcion" />
+                </div>
+      
+            <div class="form-group col-md-6">
+                <label for="pais">Pais</label>
+                <select id="Pais" name="Pais" class="form-control" [(ngModel)] = "prueba.pais!.idPais">
+                  <option value="-1">[Seleccione]</option>
+                  <option *ngFor="let aux of paises" value="{{aux.idPais}}">
+                    {{aux.nombre}}
+                  </option>
+                </select>
+            </div>
+
+        </div>
+ 
+            <div class="row" style="margin-top: 1%">
+                <div class="col-lg-12">
+                    <button class="btn btn-success">Registrar</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+

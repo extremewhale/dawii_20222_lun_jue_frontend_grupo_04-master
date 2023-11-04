@@ -1,0 +1,668 @@
+<app-menu></app-menu>
+<div style="padding: 2%">
+  <div class="row">
+    <div class="col-lg-10">
+      <h5>
+        <strong class="h3 text-monospace"
+          ><span class="text-success">C</span><span class="text-primary">R</span
+          ><span class="text-warning">U</span
+          ><span class="text-danger">D</span></strong
+        >
+        Autor
+      </h5>
+    </div>
+    <div class="col-lg-2">
+      <div class="input-group mb-3">
+          <input 
+            type="text" 
+            class="form-control"
+            id="search"
+            name="search"
+            type="search"
+            placeholder="Buscar..."
+            class="form-control ml-25"
+            [(ngModel)]="searchText"
+          >
+          <div class="input-group-append"><button class="btn btn-primary"><i class="fas fa-search"></i></button></div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="row mt-3 ml-3 mr-3">
+    <div class="col-lg-2">
+      <h5>Filtro...</h5>
+    </div>
+  </div>
+
+  <div class="row mt-3 ml-3 mr-3">
+    <div class="col-lg-3">
+      <label for="nombres">Nombres:</label>
+      <input
+        type="text"
+        class="form-control"
+        name="nombres"
+        id="nombres"
+        [(ngModel)]="nombres"
+      />
+    </div>
+
+    <div class="col-lg-3">
+      <label for="apellidos">Apellidos:</label>
+      <input
+        type="text"
+        class="form-control"
+        name="apellidos"
+        id="apellidos"
+        [(ngModel)]="apellidos"
+      />
+    </div>
+
+    <div class="col-lg-2 mt-4">
+      <button (click)="consultar()" class="btn btn-primary btn-block mt-2">
+        Filtrar
+      </button>
+    </div>
+    <div class="col-lg-2 mt-4">
+      <button
+        (click)="limpiarFiltro()"
+        class="btn btn-secondary btn-block mt-2"
+      >
+        Limpiar filtro
+      </button>
+    </div>
+    <div class="col-lg-2 mt-4">
+      <button
+        data-toggle="modal"
+        data-target="#modalAgregar"
+        class="btn btn-success btn-block mt-2"
+      >
+        Agregar
+      </button>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-lg-12">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="text-center">ID</th>
+            <th>Nombres</th>
+            <th>Apellidos</th>
+            <th class="text-center">Teléfono</th>
+            <th class="text-center">Grado</th>
+            <th class="text-center">Fecha de Nacimiento</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Fecha y Hora de Registro</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Editar</th>
+            <th class="text-center">Eliminar</th>
+          </tr>
+        </thead>
+        <tbody class="table-striped">
+          <tr *ngFor="let aux of listaAutores | buscar : searchText : ''">
+            <td class="text-center">{{ aux.idAutor }}</td>
+            <td>{{ aux.nombres }}</td>
+            <td>{{ aux.apellidos }}</td>
+            <td class="text-center">{{ aux.telefono }}</td>
+            <td class="text-center">{{ aux.grado!.descripcion }}</td>
+            <td class="text-center">
+              {{ aux.fechaNacimiento | date: "dd-MM-yyyy" }}
+            </td>
+            <td class="text-center">
+              <span
+                *ngIf="aux.estado == 1"
+                class="badge badge-pill badge-success"
+                >Activo</span
+              >
+              <span
+                *ngIf="aux.estado == 0"
+                class="badge badge-pill badge-danger"
+                >Inactivo</span
+              >
+            </td>
+            <td class="text-center">
+              {{ aux.fechaRegistro | date: "dd-MM-yyyy h:mm:ss a" }}
+            </td>
+            <td class="text-center">
+              <div class="custom-control custom-switch ml-1">
+                <input
+                  type="checkbox"
+                  class="custom-control-input"
+                  id="cambiarEstado_{{ aux.idAutor }}"
+                  name="cambiarEstado"
+                  [checked]="aux.estado == 1 ? true : false"
+                  (change)="cambiarEstado(aux)"
+                />
+                <label
+                  class="custom-control-label"
+                  for="cambiarEstado_{{ aux.idAutor }}"
+                ></label>
+              </div>
+            </td>
+            <td class="text-center">
+              <button
+                (click)="buscaYabre(aux, 'actualizar')"
+                class="btn btn-sm btn-warning btn-block"
+                data-toggle="modal"
+                data-target="#modalActualizar"
+              >
+                Editar
+              </button>
+            </td>
+            <td class="text-center">
+              <button
+                (click)="eliminar(aux)"
+                class="btn btn-sm btn-danger btn-block"
+              >
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="modalAgregar"
+    tabindex="-1"
+    aria-labelledby="modalAgregar"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Agregar un Autor</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            id="btnCerrarModalAgregar"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form class="content" [formGroup]="formAgregar">
+            <div class="submit-form">
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="agregarNombres"
+                    >Nombres<span class="text-danger">*</span></label
+                  >
+                  <input
+                    type="text"
+                    formControlName="validarNombres"
+                    [(ngModel)]="autor.nombres"
+                    placeholder="Ingrese los nombres"
+                    class="form-control"
+                    name="nombres"
+                    id="agregarNombres"
+                    [class.is-valid]="
+                      !formAgregar.controls.validarNombres.errors
+                    "
+                    [class.is-invalid]="
+                      formAgregar.controls.validarNombres.errors
+                    "
+                  />
+                  <div
+                    *ngIf="
+                      formAgregar.controls.validarNombres.errors;
+                      else nombresOK
+                    "
+                    class="invalid-feedback"
+                  >
+                    Los nombres son obligatorios<br />
+                    Los nombres deben tener un largo de 3 a 100 caracteres
+                  </div>
+                  <ng-template #nombresOK>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="agregarApellidos"
+                    >Apellidos<span class="text-danger">*</span></label
+                  >
+                  <input
+                    type="text"
+                    formControlName="validarApellidos"
+                    [(ngModel)]="autor.apellidos"
+                    placeholder="Ingrese los apellidos"
+                    class="form-control"
+                    name="apellidos"
+                    id="agregarApellidos"
+                    [class.is-valid]="
+                      !formAgregar.controls.validarApellidos.errors
+                    "
+                    [class.is-invalid]="
+                      formAgregar.controls.validarApellidos.errors
+                    "
+                  />
+                  <div
+                    *ngIf="
+                      formAgregar.controls.validarApellidos.errors;
+                      else apellidosOK
+                    "
+                    class="invalid-feedback"
+                  >
+                    Los apellidos son obligatorios<br />
+                    Los apellidos deben tener un largo de 3 a 100 caracteres
+                  </div>
+                  <ng-template #apellidosOK>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="agregarTelefono"
+                    >Teléfono<span class="text-danger">*</span></label
+                  >
+                  <input
+                    type="text"
+                    formControlName="validarTelefono"
+                    [(ngModel)]="autor.telefono"
+                    placeholder="Ingrese el teléfono"
+                    class="form-control"
+                    name="telefono"
+                    id="agregarTelefono"
+                    [class.is-valid]="
+                      !formAgregar.controls.validarTelefono.errors
+                    "
+                    [class.is-invalid]="
+                      formAgregar.controls.validarTelefono.errors
+                    "
+                  />
+                  <div
+                    *ngIf="
+                      formAgregar.controls.validarTelefono.errors;
+                      else telefonoOK
+                    "
+                    class="invalid-feedback"
+                  >
+                    El teléfono es obligatorio<br />
+                    El teléfono debe tener 9 digitos
+                  </div>
+                  <ng-template #telefonoOK>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="agregarGrado"
+                    >Grado<span class="text-danger">*</span></label
+                  >
+                  <select
+                    id="agregarGrado"
+                    name="grado"
+                    class="form-control custom-select"
+                    [(ngModel)]="autor.grado!.idGrado"
+                    formControlName="validarGrado"
+                    [class.is-valid]="!formAgregar.controls.validarGrado.errors"
+                    [class.is-invalid]="
+                      formAgregar.controls.validarGrado.errors
+                    "
+                  >
+                    <option value="-1">[Seleccione]</option>
+                    <option
+                      *ngFor="let aux of listaGrados"
+                      value="{{ aux.idGrado }}"
+                    >
+                      {{ aux.descripcion }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      formAgregar.controls.validarGrado.errors;
+                      else gradoOK
+                    "
+                    class="invalid-feedback"
+                  >
+                    El Grado es obligatorio
+                  </div>
+                  <ng-template #gradoOK>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="agregarFecha"
+                    >Fecha de Nacimiento<span class="text-danger"
+                      >*</span
+                    ></label
+                  >
+                  <input
+                    type="date" 
+                    formControlName="validarFecha"
+                    [(ngModel)]="autor.fechaNacimiento"
+                    placeholder="Ingrese la fecha de nacimiento"
+                    class="form-control"
+                    name="fechaNacimiento"
+                    id="agregarFecha"
+                    [class.is-valid]="!formAgregar.controls.validarFecha.errors"
+                    [class.is-invalid]="
+                      formAgregar.controls.validarFecha.errors
+                    "
+                  />
+                  <div
+                    *ngIf="
+                      formAgregar.controls.validarFecha.errors;
+                      else fechaOK
+                    "
+                    class="invalid-feedback"
+                  >
+                    La fecha es obligatoria
+                  </div>
+                  <ng-template #fechaOK>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="reset" class="btn btn-secondary btn-sm">
+                Limpiar
+              </button>
+              <button
+                (click)="cierraYlimpia('agregar')"
+                class="btn btn-outline-primary btn-sm"
+              >
+                Cerrar
+              </button>
+              <button
+                (click)="agregar()"
+                class="btn btn-success btn-sm"
+                [disabled]="formAgregar.invalid"
+              >
+                Agregar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="modal fade"
+    id="modalActualizar"
+    tabindex="-1"
+    aria-labelledby="modalActualizar"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Actualizar un Autor</h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            id="btnCerrarModalActualizar"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <form class="content" [formGroup]="formActualizar">
+            <div class="submit-form">
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="actualizarNombres"
+                    >Nombres<span class="text-danger">*</span></label
+                  >
+                  <input
+                    type="text"
+                    formControlName="validarNombres"
+                    [(ngModel)]="autor.nombres"
+                    placeholder="Ingrese los nombres"
+                    class="form-control"
+                    name="nombres"
+                    id="actualizarNombres"
+                    [class.is-valid]="
+                      !formActualizar.controls.validarNombres.errors
+                    "
+                    [class.is-invalid]="
+                      formActualizar.controls.validarNombres.errors
+                    "
+                  />
+                  <div
+                    *ngIf="
+                      formActualizar.controls.validarNombres.errors;
+                      else nombresOKa
+                    "
+                    class="invalid-feedback"
+                  >
+                    Los nombres son obligatorios<br />
+                    Los nombres deben tener un largo de 3 a 100 caracteres
+                  </div>
+                  <ng-template #nombresOKa>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="actualizarApellidos"
+                    >Apellidos<span class="text-danger">*</span></label
+                  >
+                  <input
+                    type="text"
+                    formControlName="validarApellidos"
+                    [(ngModel)]="autor.apellidos"
+                    placeholder="Ingrese los apellidos"
+                    class="form-control"
+                    name="apellidos"
+                    id="actualizarApellidos"
+                    [class.is-valid]="
+                      !formActualizar.controls.validarApellidos.errors
+                    "
+                    [class.is-invalid]="
+                      formActualizar.controls.validarApellidos.errors
+                    "
+                  />
+                  <div
+                    *ngIf="
+                      formActualizar.controls.validarApellidos.errors;
+                      else apellidosOKa
+                    "
+                    class="invalid-feedback"
+                  >
+                    Los apellidos son obligatorios<br />
+                    Los apellidos deben tener un largo de 3 a 100 caracteres
+                  </div>
+                  <ng-template #apellidosOKa>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="actualizarTelefono"
+                    >Teléfono<span class="text-danger">*</span></label
+                  >
+                  <input
+                    type="text"
+                    formControlName="validarTelefono"
+                    [(ngModel)]="autor.telefono"
+                    placeholder="Ingrese el teléfono"
+                    class="form-control"
+                    name="telefono"
+                    id="actualizarTelefono"
+                    [class.is-valid]="
+                      !formActualizar.controls.validarTelefono.errors
+                    "
+                    [class.is-invalid]="
+                      formActualizar.controls.validarTelefono.errors
+                    "
+                  />
+                  <div
+                    *ngIf="
+                      formActualizar.controls.validarTelefono.errors;
+                      else telefonoOKa
+                    "
+                    class="invalid-feedback"
+                  >
+                    El teléfono es obligatorio<br />
+                    El teléfono debe tener 9 digitos
+                  </div>
+                  <ng-template #telefonoOKa>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="actualizarGrado"
+                    >Grado<span class="text-danger">*</span></label
+                  >
+                  <select
+                    id="actualizarGrado"
+                    name="grado"
+                    class="form-control custom-select"
+                    [(ngModel)]="autor.grado!.idGrado"
+                    formControlName="validarGrado"
+                    [class.is-valid]="
+                      !formActualizar.controls.validarGrado.errors
+                    "
+                    [class.is-invalid]="
+                      formActualizar.controls.validarGrado.errors
+                    "
+                  >
+                    <option value="-1">[Seleccione]</option>
+                    <option
+                      *ngFor="let aux of listaGrados"
+                      value="{{ aux.idGrado }}"
+                    >
+                      {{ aux.descripcion }}
+                    </option>
+                  </select>
+                  <div
+                    *ngIf="
+                      formActualizar.controls.validarGrado.errors;
+                      else gradoOKa
+                    "
+                    class="invalid-feedback"
+                  >
+                    El Grado es obligatorio
+                  </div>
+                  <ng-template #gradoOKa>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="actualizarFecha"
+                    >Fecha de Nacimiento<span class="text-danger"
+                      >*</span
+                    ></label
+                  >
+                  <input
+                    type="date"
+                    formControlName="validarFecha"
+                    [(ngModel)]="autor.fechaNacimiento"
+                    placeholder="Ingrese la fecha de nacimiento"
+                    class="form-control"
+                    name="fechaNacimiento"
+                    id="actualizarFecha"
+                    [class.is-valid]="
+                      !formActualizar.controls.validarFecha.errors
+                    "
+                    [class.is-invalid]="
+                      formActualizar.controls.validarFecha.errors
+                    "
+                  />
+                  <div
+                    *ngIf="
+                      formActualizar.controls.validarFecha.errors;
+                      else fechaOKa
+                    "
+                    class="invalid-feedback"
+                  >
+                    La fecha es obligatoria
+                  </div>
+                  <ng-template #fechaOKa>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-12">
+                  <label for="actualizarEstado">Estado<span class="text-danger"
+                        >*</span
+                      ></label>
+                  <select
+                    formControlName="validarEstado"
+                    id="actualizarEstado"
+                    [(ngModel)]="autor.estado"
+                    name="estado"
+                    class="form-control custom-select"
+                    [class.is-valid]="
+                      !formActualizar.controls.validarEstado.errors
+                    "
+                    [class.is-invalid]="
+                      formActualizar.controls.validarEstado.errors
+                    "
+                  >
+                    <option value="-1">[Seleccione]</option>
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                  </select>
+                  <div
+                    *ngIf="
+                      formActualizar.controls.validarEstado.errors;
+                      else estadoOKa
+                    "
+                    class="invalid-feedback"
+                  >
+                    El estado es obligatorio
+                  </div>
+                  <ng-template #estadoOKa>
+                    <div class="valid-feedback">Se ve bien</div>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <!-- <button type="reset" class="btn btn-secondary btn-sm">
+                Limpiar
+              </button> -->
+              <button 
+                id="btnAbrirModalActualizar" 
+                [hidden]="true" data-toggle="modal" 
+                data-target="#modalActualizar">
+              </button>
+              <button
+                (click)="cierraYlimpia('actualizar')"
+                class="btn btn-outline-primary btn-sm"
+              >
+                Cerrar
+              </button>
+              <button
+                (click)="actualizar()"
+                class="btn btn-warning btn-sm"
+                [disabled]="formActualizar.invalid"
+              >
+                Actualizar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
