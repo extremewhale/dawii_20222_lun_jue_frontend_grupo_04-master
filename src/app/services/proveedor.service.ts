@@ -23,13 +23,13 @@ export class ProveedorService {
 
     const params = new HttpParams().set("razonsocial", razonsocial).set("ruc", ruc).set("estado", estado).set("idPais", idPais);
     return this.http.get(baseUrlProveedor + "/listaPorFiltro", {params});
-    }
+  }
   
     //para el crud
     
     
 
-    consultaProveedor(nombre :string): Observable<any>{
+  consultaProveedor(nombre :string): Observable<any>{
       return this.http.get(baseCrudUrl + "listaProveedorPorNombreLike/" + nombre)
   }
 
