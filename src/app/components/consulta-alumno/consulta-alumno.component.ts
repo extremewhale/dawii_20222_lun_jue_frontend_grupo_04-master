@@ -7,9 +7,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConsultaAlumnoComponent implements OnInit {
 
+  titulo:string="";
+  serie:string="";
+  selCategoria:number = 0;
+  estado:boolean = true;
+  fechaInicio:string="";
+  fechaFin:string="";
+
   constructor() { }
 
   ngOnInit(): void {
+
   }
 
 }
