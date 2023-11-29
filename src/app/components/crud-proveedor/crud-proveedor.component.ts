@@ -1,203 +1,191 @@
-
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { switchAll } from 'rxjs';
 import { Component, OnInit } from '@angular/core';
-import { Pais } from 'src/app/models/pais.model';
 import { Proveedor } from 'src/app/models/proveedor.model';
 import { ProveedorService } from 'src/app/services/proveedor.service';
-import { UtilService } from 'src/app/services/util.service';
+import { catchError, finalize, tap } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 import Swal from 'sweetalert2';
+import { UtilService } from 'src/app/services/util.service';
+import { Pais } from 'src/app/models/pais.model';
+
 
 @Component({
-  selector: 'app-consulta-proveedor',
+  selector: 'app-crud-proveedor',
   templateUrl: './crud-proveedor.component.html',
   styleUrls: ['./crud-proveedor.component.css']
 })
 export class CrudProveedorComponent implements OnInit {
 
+  listaProveedores: Proveedor[] = [];
+  searchText: string = '';
+  isLoading: boolean = false;
+  listPais: Pais[] = [];
 
-  proveedor: Proveedor[] = [];
-  listPais:Pais[] = [];
-  filtro: string ="";
-
-
-    //Json para registrar o actualizar
-  provedor1: Proveedor = { 
-    idProveedor:0,
-    razonsocial:"",
-     ruc:"",
-     direccion:"",
-     celular:"",
-     contacto:"",
-    estado:1,
-    fechaRegistro:undefined,
-    pais:{
-      idPais: -1,
+  proveedor: Proveedor = {
+    idProveedor: 0,
+    razonsocial: '',
+    ruc: '',
+    direccion: '',
+    celular: '',
+    contacto: '',
+    estado: 1,
+    fechaRegistro: new Date(2022, 3, 4, 3, 59, 7),
+    pais: {
+      idPais: 2,
+      iso: 'AX',
+      nombre: 'Islas Gland',
     }
   };
 
-
- 
   
-constructor(private proveedorService: ProveedorService, private utilService:UtilService) { 
 
+  constructor(private proveedorService: ProveedorService, private utilService:UtilService) { 
     this.utilService.listaPais().subscribe(
       x => this.listPais = x
     );
-
   }
-
-
 
   ngOnInit(): void {
+    this.consultar();
   }
 
-   
-     // PARA VALIDAR QUE PUSLO EL BOTÓN
-     submitted = false;
-     formsRegistra = new FormGroup({
-      validaRazonSocial: new FormControl('',[Validators.required,Validators.pattern('[a-zA-ZáéíóúÁÉÍÓÚñ0-9 ]{1,30}')]),
-      validaRuc: new FormControl('',[Validators.required,Validators.pattern('[0-9]{10}')]),
-      validaDireccion: new FormControl('',[Validators.required,Validators.pattern('[a-zA-ZáéíóúÁÉÍÓÚ\.,\ñ0-9 ]{3,30}')]),
-      validaCelular: new FormControl('',[Validators.required,Validators.pattern('[0-9]{8}')]),
-      validaContacto: new FormControl('',[Validators.required,Validators.pattern('[a-zA-ZáéíóúÁÉÍÓÚñ0-9 ]{3,30}')]),
-      validaPais:new FormControl('',[Validators.min(1)]),
-     });
-
-     formsActualiza = new FormGroup({
-      validaRazonSocial: new FormControl('', [Validators.required, Validators.pattern('[a-zA-ZáéíóúÁÉÍÓÚñ0-9 ]{1,30}')]),
-      validaRuc: new FormControl('', [Validators.required,Validators.pattern('[0-9]{10}')]),
-      validaDireccion: new FormControl('', [Validators.required,Validators.pattern('[a-zA-ZáéíóúÁÉÍÓÚñ0-9 ]{1,30}')]),
-      validaCelular: new FormControl('', [Validators.required, Validators.pattern('[0-9]{9}')]),
-      validaContacto:new FormControl('', [Validators.required, Validators.pattern('[a-zA-ZáéíóúÁÉÍÓÚñ0-9 ]{1,30}')]),
-      validaPais: new FormControl('', [Validators.min(1)]),
-      validaEstado: new FormControl('', [Validators.min(0)]),
-    });
- 
-  consultaProveedor1(){
-      this.proveedorService.consultaProveedor(this.filtro==""?"todos":this.filtro).subscribe(
-          x => this.proveedor = x
-      )
+  busca(obj:Proveedor){
+    this.proveedor = obj
   }
 
-
-  clear(){
-  this.provedor1={
-    idProveedor:0,
-    razonsocial:"",
-     ruc:"",
-     direccion:"",
-     celular:"",
-     contacto:"",
-    estado:1,
-    pais:{
-      idPais: -1,
-
-
-  }
-
-  }
-}
-
-  registra(){
-
-    this.submitted= true;
-    //finaliza el metodo si hay error 
-    if (this.formsRegistra.invalid){
-      return;
+  consultar(): void {
+    this.isLoading = true;
+    if(this.searchText === "") {
+      this.searchText = "todos";
     }
-
-    this.submitted=false;
-
-      /*console.log(">>> registra >> ");*/
-      this.proveedorService.registraProveedor(this.provedor1).subscribe(
-          x => {  
-                   document.getElementById("btn_reg_limpiar")?.click();
-                   document.getElementById("btn_reg_cerrar")?.click(); 
-                   Swal.fire('Mensaje', x.mensaje,'info');
-                   this.proveedorService.consultaProveedor(this.filtro==""?"todos":this.filtro).subscribe(
-                      x => this.proveedor = x
-                   ); 
-               }
+    this.proveedorService.consultaProveedor(this.searchText)
+      .pipe(
+        tap(result => {
+          this.listaProveedores = result;
+          Swal.fire('Mensaje', 'Consulta realizada correctamente', 'info');
+        }),
+        catchError(error => {
+          console.error('Error al consultar proveedores', error);
+          Swal.fire('Error', 'Hubo un problema al consultar proveedores', 'error');
+          return throwError(error);
+        }),
+        finalize(() => this.isLoading = false)
       )
+      .subscribe();
+      this.searchText = ""
   }
 
-  busca(obj: Proveedor){
-      console.log(">>> busca >> " + obj.idProveedor);
-      this.provedor1 = obj;
-      
-      this.utilService.listaPais().subscribe(
-        response =>  this.listPais= response
-      );
+  limpiarFiltro(): void {
+    this.searchText = '';
+    this.consultar();
   }
 
-  cambiaEstado(obj:Proveedor){
-      obj.estado =  obj.estado == 1 ? 0 : 1;
-      this.proveedorService.actualizaProveedor(obj).subscribe();
-  }
-
-  actualiza(){
-      console.log(">>> actualiza >> ");
-      this.proveedorService.actualizaProveedor(this.provedor1).subscribe(
-          x => {
-                document.getElementById("btn_act_cerrar")?.click(); 
-                Swal.fire('Mensaje', x.mensaje,'info');
-                this.proveedorService.consultaProveedor(this.filtro==""?"todos":this.filtro).subscribe(
-                    x => this.proveedor = x
-                ); 
-            }
+  agregar(): void {
+    this.proveedorService.registraProveedor(this.proveedor)
+      .pipe(
+        tap(result => {
+          Swal.fire('Mensaje', result.mensaje, 'info');
+          this.consultar();
+        }),
+        catchError(error => {
+          console.error('Error al agregar proveedor', error);
+          Swal.fire('Error', 'Hubo un problema al agregar proveedor', 'error');
+          return throwError(error);
+        })
       )
+      .subscribe();
+      this.proveedor= {
+        idProveedor: 0,
+        razonsocial: '',
+        ruc: '',
+        direccion: '',
+        celular: '',
+        contacto: '',
+        estado: 1,
+        fechaRegistro: undefined,
+        pais: {
+          idPais: 2,
+          iso: 'AX',
+          nombre: 'Islas Gland',
+        }
+      };
   }
 
- 
+  actualizar(proveedor: Proveedor): void {
+    this.proveedorService.actualizaProveedor(proveedor)
+      .pipe(
+        tap(result => {
+          Swal.fire('Mensaje', result.mensaje, 'info');
+          this.consultar();
+        }),
+        catchError(error => {
+          console.error('Error al actualizar proveedor', error);
+          Swal.fire('Error', 'Hubo un problema al actualizar proveedor', 'error');
+          return throwError(error);
+        })
+      )
+      .subscribe();
+      this.proveedor= {
+        idProveedor: 0,
+        razonsocial: '',
+        ruc: '',
+        direccion: '',
+        celular: '',
+        contacto: '',
+        estado: 1,
+        fechaRegistro: undefined,
+        pais: {
+          idPais: 2,
+          iso: 'AX',
+          nombre: 'Islas Gland',
+        }
+      };
+  }
 
-elimina(obj :Proveedor){
-
-  console.log(">>> elimina >> ");
-
+  eliminar(proveedor: Proveedor): void {
+    const idProveedor = proveedor.idProveedor;
   
-
-  Swal.fire({
-
-    title: 'Mensaje',
-
-    text: "¿Desea eliminar?",
-
-    icon: 'warning',
-
-    showCancelButton: true,
-
-    confirmButtonColor: '#3085d6',
-
-    cancelButtonColor: '#d33',
-
-    confirmButtonText: 'Sí, elimine',
-
-    cancelButtonText: 'Cancelar'
-
-  }).then((result) => {
-
-    if (result.isConfirmed) {
-
-      //elimino
-          this.proveedorService.eliminaProveedor(obj.idProveedor || 0).subscribe(
-           x => { Swal.fire('Mensaje',x.mensaje,'info');
-            
-      //actualizo 
-           this.proveedorService.consultaProveedor(this.filtro==""?"todos":this.filtro).subscribe(
-            x => this.proveedor = x
-           );
-          }
+    if (idProveedor !== undefined) {
+      Swal.fire({
+        title: '¿Desea eliminar?',
+        text: 'Los cambios no se van a revertir',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, elimina.',
+        cancelButtonText: 'No, cancelar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.proveedorService.eliminaProveedor(idProveedor).subscribe(
+            (result) => {
+              Swal.fire('Mensaje', result.mensaje, 'success');
+              this.consultar();
+            },
+            (error) => {
+              console.error('Error al eliminar proveedor', error);
+              Swal.fire('Error', 'Hubo un problema al eliminar proveedor', 'error');
+            }
           );
-
+        }
+      });
+    } else {
+      console.error('Error: El ID del proveedor es undefined');
     }
-
-  })
-
-}
-
-
-
-
-
+    this.proveedor= {
+      idProveedor: 0,
+      razonsocial: '',
+      ruc: '',
+      direccion: '',
+      celular: '',
+      contacto: '',
+      estado: 1,
+      fechaRegistro: undefined,
+      pais: {
+        idPais: 2,
+        iso: 'AX',
+        nombre: 'Islas Gland',
+      }
+    };
+  }
+  
 }

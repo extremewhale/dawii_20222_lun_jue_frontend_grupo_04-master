@@ -21,6 +21,10 @@ export class UtilService {
   listaPais():Observable<Pais[]>{
     return this.http.get<Pais[]>(baseUrlUtil+"/listaPais");
   }
+  
+  getPais(id: number):Observable<Pais>{
+    return this.http.get<Pais>(baseUrlUtil+"/getPais"+{id});
+  }
 
   listaCategoria():Observable<Categoria[]>{
     return this.http.get<Categoria[]>(baseUrlUtil+"/listaCategoria");
