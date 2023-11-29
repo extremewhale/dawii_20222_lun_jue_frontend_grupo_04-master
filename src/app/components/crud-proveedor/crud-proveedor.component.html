@@ -1,392 +1,203 @@
-<div class="container">
-        <h5 class="btn btn-dark">Crud de Proveedor</h5>
-
-        <div class="col-md-23" style="margin-top: 3%">
-
-
-                <div class="row" style="height: 80px">
-                        <div class="col-md-4">
-                                <input [(ngModel)]="filtro" class="form-control" id="id_txt_filtro" name="filtro"
-                                        placeholder="Ingrese el nombre" type="text" maxlength="30" />
-                        </div>
-                        <div class="col-md-2">
-                                <button type="button" (click)="consultaProveedor1()" class="btn btn-primary btn-sm"
-                                        id="id_btn_filtrar" style="width: 150px">Filtrar</button>
-                        </div>
-                        <div class="col-md-2">
-                                <button type="button" data-toggle='modal' data-target="#idModalRegistrar"
-                                        class='btn btn-primary btn-sm' style="width: 150px">Registrar</button>
-                        </div>
-                </div>
-
-                <div class="row">
-                        <div class="col-md-12">
-                                <div class="content">
-
-                                        <table id="id_table" class="table table-striped table-bordered">
-                                                <thead>
-                                                        <tr>
-                                                                <th style="width: 5%">#</th>
-                                                                <th style="width: 30%">Razon Social</th>
-                                                                <th style="width: 10%">Ruc</th>
-                                                                <th style="width: 10%">Estado</th>
-                                                                <th style="width: 31%">Pais</th>
-                                                                <th style="width: 7%"></th>
-                                                                <th style="width: 7%"></th>
-                                                                <th style="width: 7%"></th>
-                                                        </tr>
-                                                </thead>
-                                                <tbody>
-                                                        <tr *ngFor="let x of proveedor">
-                                                                <td>{{x.idProveedor}}</td>
-                                                                <td>{{x.razonsocial}}</td>
-                                                                <td>{{x.ruc}}</td>
-                                                                <td>{{x.estado==1?"Activo":"Inactivo"}}</td>
-                                                                <td>{{x.pais!.idPais}} - {{x.pais!.iso}}-
-                                                                        {{x.pais!.nombre}}</td>
-                                                                <td>
-                                                                        <div class="custom-control custom-switch">
-                                                                                <input type="checkbox"
-                                                                                        class="custom-control-input"
-                                                                                        id="idEstado_{{x.idProveedor}}"
-                                                                                        name="estado"
-                                                                                        [checked]="x.estado==1?true:false"
-                                                                                        (change)="cambiaEstado(x)" />
-                                                                                <label class="custom-control-label"
-                                                                                        for="idEstado_{{x.idProveedor}}"></label>
-                                                                        </div>
-                                                                </td>
-                                                                <td><button type="button" (click)="busca(x)"
-                                                                                style="width: 90px"
-                                                                                class="btn btn-success btn-sm"
-                                                                                data-toggle="modal"
-                                                                                data-target="#idModalActualizar">Editar</button>
-                                                                </td>
-                                                                <td><button type="button" (click)="elimina(x)"
-                                                                                style="width: 90px"
-                                                                                class="btn btn-danger btn-sm">Eliminar</button>
-                                                                </td>
-                                                        </tr>
-                                                </tbody>
-                                        </table>
-
-                                </div>
-                        </div>
+<app-menu></app-menu>
+<div style="padding: 2%">
+  <div class="row">
+    <div class="col-lg-10">
+      <h5>
+        <strong class="h3 text-monospace">
+          <span class="text-success">C</span
+          ><span class="text-primary">R</span
+          ><span class="text-warning">U</span
+          ><span class="text-danger">D</span>
+        </strong>
+        Proveedor
+      </h5>
+    </div>
+  </div>
+  <!-- Resto del contenido... -->
+  <div class="row mt-3 ml-3 mr-3">
+        <div class="col-lg-2">
+          <h5>Filtro...</h5>
+        </div>
+        
+  </div>
+      
+      <div class="row mt-3 ml-3 mr-3">
+        <div class="col-lg-2">
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="search"
+                    name="search"
+                    type="search"
+                    placeholder="Buscar..."
+                    class="form-control ml-25"
+                    [(ngModel)]="searchText"
+                  />
+                  <div class="input-group-append">
+                    <button class="btn btn-primary">
+                      <i class="fas fa-search"></i>
+                    </button>
+                  </div>
                 </div>
         </div>
-
-
-        <div class="modal fade" id="idModalRegistrar" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-
-                <div class="modal-dialog" style="max-width: 70%;">
-                        <div class="modal-content">
-
-                                <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Registro de Proveedor</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                        </button>
-                                </div>
-
-                                <div class="modal-body">
-                                        <form class="content" [formGroup]="formsRegistra">
-                                                <div class="submit-form">
-
-                                                        <div class="row">
-                                                                <div class="col-lg-8">
-                                                                        <label for="id_reg_nombre">Razon Social</label>
-                                                                        <input type="text"
-                                                                                formControlName="validaRazonSocial"
-                                                                                [(ngModel)]="provedor1.razonsocial"
-                                                                                placeholder="Ingrese la Razon Social"
-                                                                                class="form-control" name="razonsocial"
-                                                                                id="id_reg_nombre" />
-                                                                        <div *ngIf="submitted && formsRegistra.controls.validaRazonSocial.errors"
-                                                                                class="invalid">
-
-                                                                                <ul>
-
-                                                                                        <li>El nombre es obligatorio
-                                                                                        </li>
-
-                                                                                        <li>El nombre es de 3 a 30
-                                                                                                caracteres</li>
-
-                                                                                </ul>
-
-                                                                        </div>
-                                                                </div>
-
-
-                                                                <div class="col-lg-4">
-                                                                        <label for="id_reg_dni">RUC</label>
-                                                                        <input formControlName="validaRuc"
-                                                                                [(ngModel)]="provedor1.ruc" type="text"
-                                                                                placeholder="Ingrese RUC"
-                                                                                class="form-control" name="ruc"
-                                                                                id="id_reg_dni" maxlength="10" />
-                                                                        <div *ngIf="submitted && formsRegistra.controls.validaRuc.errors"
-                                                                                class="invalid">
-
-                                                                                <ul>
-
-                                                                                        <li>El RUC es obligatorio</li>
-
-                                                                                        <li>El RUC es de 10 caracteres
-                                                                                        </li>
-
-                                                                                </ul>
-
-                                                                        </div>
-                                                                </div>
-
-                                                                <div class="col-lg-4">
-                                                                        <label for="id_reg_dni">Direccion</label>
-                                                                        <input formControlName="validaDireccion"
-                                                                                [(ngModel)]="provedor1.direccion"
-                                                                                type="text"
-                                                                                placeholder="Ingrese Direccion"
-                                                                                class="form-control" name="direccion"
-                                                                                id="id_reg_dni" maxlength="15" />
-                                                                        <div *ngIf="submitted && formsRegistra.controls.validaDireccion.errors"
-                                                                                class="invalid">
-
-                                                                                <ul>
-
-                                                                                        <li>El Direccion es obligatorio
-                                                                                        </li>
-
-                                                                                        <li>El Direccion es de 15
-                                                                                                caracteres
-                                                                                        </li>
-
-                                                                                </ul>
-
-                                                                        </div>
-                                                                </div>
-
-                                                                <div class="col-lg-4">
-                                                                        <label for="id_reg_dni">Celular</label>
-                                                                        <input formControlName="validaCelular"
-                                                                                [(ngModel)]="provedor1.celular"
-                                                                                type="text"
-                                                                                placeholder="Ingrese Direccion"
-                                                                                class="form-control" name="celular"
-                                                                                id="id_reg_dni" maxlength="8" />
-                                                                        <div *ngIf="submitted && formsRegistra.controls.validaCelular.errors"
-                                                                                class="invalid">
-
-                                                                                <ul>
-
-                                                                                        <li>El numero Celular es
-                                                                                                obligatorio</li>
-
-                                                                                        <li>El Celular es de 8
-                                                                                                caracteres
-                                                                                        </li>
-
-                                                                                </ul>
-
-                                                                        </div>
-                                                                </div>
-
-                                                                <div class="col-lg-4">
-                                                                        <label for="id_reg_dni">Contacto</label>
-                                                                        <input formControlName="validaContacto"
-                                                                                [(ngModel)]="provedor1.contacto"
-                                                                                type="text"
-                                                                                placeholder="Ingrese Contacto"
-                                                                                class="form-control" name="contacto"
-                                                                                id="id_reg_dni" maxlength="8" />
-                                                                        <div *ngIf="submitted && formsRegistra.controls.validaContacto.errors"
-                                                                                class="invalid">
-
-                                                                                <ul>
-
-                                                                                        <li>El Contacto es obligatorio
-                                                                                        </li>
-
-                                                                                </ul>
-
-                                                                        </div>
-                                                                </div>
-                                                        </div>
-
-
-                                                        <div class="row" style="margin-top: 5%">
-
-                                                                <div class="col-lg-4">
-                                                                        <label for="id_reg_departamento">Pais</label>
-                                                                        <select formControlName="validaPais"
-                                                                                [(ngModel)]="provedor1.pais!.nombre"
-                                                                                id="id_reg_departamento"
-                                                                                name="departamento"
-                                                                                class="form-control">
-                                                                                <option value="-1"> [Seleccione]
-                                                                                </option>
-                                                                                <option *ngFor="let aux of listPais"
-                                                                                        value="{{ aux.idPais }}">
-                                                                                        {{ aux.nombre }}
-                                                                                </option>
-                                                                        </select>
-                                                                        <div *ngIf="submitted && formsRegistra.controls.validaPais.errors"
-                                                                                class="invalid">
-
-                                                                                <ul>
-
-                                                                                        <li>El PAIS es obligatorio</li>
-
-
-
-                                                                                </ul>
-
-                                                                        </div>
-                                                                </div>
-
-
-
-
-
-                                                        </div>
-
-                                                </div>
-                                                <div class="modal-footer">
-                                                        <button type="reset" class="btn btn-secondary btn-sm"
-                                                                id="btn_reg_limpiar"
-                                                                style="width: 100px;">Limpiar</button>
-                                                        <button type="button" class="btn btn-secondary btn-sm"
-                                                                data-dismiss="modal" id="btn_reg_cerrar"
-                                                                style="width: 100px;">Cerrar</button>
-                                                        <div class="form-group text-center">
-                                                                <div class="col-lg-12">
-                                                                        <button id="id_reg_registra"
-                                                                                (click)="registra()"
-                                                                                class="btn btn-success form-control"
-                                                                                style="width: 100px;"
-                                                                                [disabled]="submitted && formsRegistra.invalid">Registrar</button>
-                                                                </div>
-                                                        </div>
-                                                </div>
-
-
-                                        </form>
-                                </div>
-
-
-
-                        </div>
-                </div>
+        <div class="col-lg-2 mt-4">
+                <button
+                  (click)="consultar()"
+                  class="btn btn-success btn-block mt-2">
+                  Filtrar
+                </button>
         </div>
+        <div class="col-lg-2 mt-4">
+          <button
+            (click)="limpiarFiltro()"
+            class="btn btn-secondary btn-block mt-2"
+          >
+            Limpiar filtro
+          </button>
+        </div>
+        <div class="col-lg-2 mt-4">
+          <button
+            data-toggle="modal"
+            data-target="#modalAgregar"
+            class="btn btn-success btn-block mt-2"
+          >
+            Agregar
+          </button>
+        </div>
+      </div>
 
-        <div class="modal fade" id="idModalActualizar" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog" style="max-width: 80%;">
-                        <div class="modal-content">
-                                <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Actualización de provedor1</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                        </button>
-                                </div>
-                                <div class="modal-body">
+      <div class="row mt-4">
+        <div class="col-lg-12">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Razón Social</th>
+                <th>RUC</th>
+                <th>Dirección</th>
+                <th>Celular</th>
+                <th>Contacto</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody class="table-striped">
+              <tr *ngFor="let proveedor of listaProveedores">
+                <td>{{ proveedor.idProveedor }}</td>
+                <td>{{ proveedor.razonsocial }}</td>
+                <td>{{ proveedor.ruc }}</td>
+                <td>{{ proveedor.direccion }}</td>
+                <td>{{ proveedor.celular }}</td>
+                <td>{{ proveedor.contacto }}</td>
+                <td>{{ proveedor.estado === 1 ? 'Activo' : 'Inactivo' }}</td>
+                <td>
+                  <button (click)="busca(proveedor)" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalActualizar">Actualizar</button>
+                  <button (click)="eliminar(proveedor)" class="btn btn-danger btn-sm">Eliminar</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      
+      <!-- Modal para agregar -->
+      <div class="modal fade" id="modalAgregar" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalAgregarLabel">Agregar Proveedor</h5>
+              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form #formsAgrega="ngForm" (ngSubmit)="agregar()">
+                <div class="mb-3">
+                  <label for="razonsocial" class="form-label">Razón Social</label>
+                  <input type="text" class="form-control" id="razonsocial" name="razonsocial" required [(ngModel)]="proveedor.razonsocial">
+                </div>
+                <div class="mb-3">
+                  <label for="ruc" class="form-label">RUC</label>
+                  <input type="text" class="form-control" id="ruc" name="ruc" required [(ngModel)]="proveedor.ruc">
+                </div>
+                <div class="mb-3">
+                  <label for="direccion" class="form-label">Dirección</label>
+                  <input type="text" class="form-control" id="direccion" name="direccion" required [(ngModel)]="proveedor.direccion">
+                </div>
+                <div class="mb-3">
+                  <label for="celular" class="form-label">Celular</label>
+                  <input type="text" class="form-control" id="celular" name="celular" required [(ngModel)]="proveedor.celular">
+                </div>
+                <div class="mb-3">
+                  <label for="contacto" class="form-label">Contacto</label>
+                  <input type="text" class="form-control" id="contacto" name="contacto" required [(ngModel)]="proveedor.contacto">
+                </div>
+                <div class="mb-3">
+                  <label for="estado" class="form-label">Estado</label>
+                  <select class="form-select" id="estado" name="estado" required [(ngModel)]="proveedor.estado">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                  </select>
+                </div>
+                      
+                <!-- Agregar más campos si es necesario -->
 
-                                        <form class="content">
-                                                <div class="submit-form">
-
-                                                        <div class="row">
-                                                                <div class="col-lg-6">
-                                                                        <label for="id_act_nombre">Razon Social</label>
-                                                                        <input type="text"
-                                                                                [(ngModel)]="provedor1.razonsocial"
-                                                                                placeholder="Ingrese el nombre"
-                                                                                class="form-control" name="nombre"
-                                                                                id="id_act_nombre" />
-                                                                </div>
-
-                                                                <div class="col-lg-2">
-                                                                        <label for="id_act_estado">Estado</label>
-                                                                        <select id="id_act_estado"
-                                                                                [(ngModel)]="provedor1.estado"
-                                                                                name="estado" class="form-control">
-                                                                                <option value="-1"> [Seleccione]
-                                                                                </option>
-                                                                                <option value="1"> Activo </option>
-                                                                                <option value="0"> Inactivo </option>
-                                                                        </select>
-                                                                </div>
-
-                                                                <div class="col-lg-3">
-                                                                        <label for="id_act_dni">Ruc</label>
-                                                                        <input type="text" [(ngModel)]="provedor1.ruc"
-                                                                                placeholder="Ingrese RUC"
-                                                                                class="form-control" name="dni"
-                                                                                id="id_act_dni" maxlength="8" />
-                                                                </div>
-                                                                <div class="col-lg-4">
-                                                                        <label for="id_act_dni">Direccion</label>
-                                                                        <input type="text" [(ngModel)]="provedor1.direccion"
-                                                                                placeholder="Ingrese DIRECCION"
-                                                                                class="form-control" name="direccion"
-                                                                                id="id_act_dni" maxlength="8" />
-                                                                </div>
-                                                                <div class="col-lg-4">
-                                                                        <label for="id_act_dni">Celular</label>
-                                                                        <input type="text" [(ngModel)]="provedor1.celular"
-                                                                                placeholder="Ingrese CELULAR"
-                                                                                class="form-control" name="celular"
-                                                                                id="id_act_dni" maxlength="8" />
-                                                                </div>
-                                                                <div class="col-lg-3">
-                                                                        <label for="id_act_dni">Contacto</label>
-                                                                        <input type="text" [(ngModel)]="provedor1.contacto"
-                                                                                placeholder="Ingrese CONTACTO"
-                                                                                class="form-control" name="contacto"
-                                                                                id="id_act_dni" maxlength="8" />
-                                                                </div>
-                                                        </div>
-
-
-                                                        <div class="row" style="margin-top: 5%">
-                                                                <div class="col-lg-4">
-                                                                        <label for="id_act_departamento">Pais</label>
-                                                                        <select [(ngModel)]="provedor1.pais!.nombre"
-                                                                                id="id_act_departamento"
-                                                                                name="departamento"
-                                                                                class="form-control">
-                                                                                <option value="-1"> [Seleccione]
-                                                                                </option>
-                                                                                <option *ngFor="let aux of listPais"
-                                                                                        value="{{ aux.idPais }}">
-                                                                                        {{ aux.nombre }}
-                                                                                </option>
-                                                                        </select>
-                                                                </div>
-
-
-
-
-                                                        </div>
-
-                                                        <div class="modal-footer">
-                                                                <!---<button type="reset" class="btn btn-secondary btn-sm" id="btn_act_limpiar"
-                                    style="width: 100px;">Limpiar</button>-->
-                                                                <button type="button" class="btn btn-secondary btn-sm"
-                                                                        data-dismiss="modal" id="btn_act_cerrar"
-                                                                        style="width: 100px;">Close</button>
-                                                                <div class="form-group text-center">
-                                                                        <div class="col-lg-12">
-                                                                                <button id="id_act_actualiza"
-                                                                                        (click)="actualiza()"
-                                                                                        class="btn btn-success form-control"
-                                                                                        style="width: 100px;">Actualizar</button>
-                                                                        </div>
-                                                                </div>
-                                                        </div>
-
-
-
-
-
-
-                                                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                  <button type="submit" class="btn btn-primary" [disabled]="formsAgrega.invalid">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      
+      <!-- Modal para actualizar -->
+      <div class="modal fade" id="modalActualizar" tabindex="-1" aria-labelledby="modalActualizarLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalActualizarLabel">Actualizar Proveedor</h5>
+              <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form #actualizarProveedorForm="ngForm" >
+                <div class="mb-3">
+                  <label for="razonsocialUpdate" class="form-label">Razón Social</label>
+                  <input type="text" class="form-control" id="razonsocialUpdate" name="razonsocialUpdate" required [(ngModel)]="proveedor.razonsocial">
+                </div>
+                <div class="mb-3">
+                  <label for="rucUpdate" class="form-label">RUC</label>
+                  <input type="text" class="form-control" id="rucUpdate" name="rucUpdate" required [(ngModel)]="proveedor.ruc">
+                </div>
+                <div class="mb-3">
+                  <label for="direccionUpdate" class="form-label">Dirección</label>
+                  <input type="text" class="form-control" id="direccionUpdate" name="direccionUpdate" required [(ngModel)]="proveedor.direccion">
+                </div>
+                <div class="mb-3">
+                  <label for="celularUpdate" class="form-label">Celular</label>
+                  <input type="text" class="form-control" id="celularUpdate" name="celularUpdate" required [(ngModel)]="proveedor.celular">
+                </div>
+                <div class="mb-3">
+                  <label for="contactoUpdate" class="form-label">Contacto</label>
+                  <input type="text" class="form-control" id="contactoUpdate" name="contactoUpdate" required [(ngModel)]="proveedor.contacto">
+                </div>
+                <div class="mb-3">
+                  <label for="estadoUpdate" class="form-label">Estado</label>
+                  <select class="form-select" id="estadoUpdate" name="estadoUpdate" required [(ngModel)]="proveedor.estado">
+                    <option value="1">Activo</option>
+                    <option value="0">Inactivo</option>
+                  </select>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                  <button type="submit" class="btn btn-primary" [disabled]="actualizarProveedorForm.invalid" (click)="actualizar(proveedor)">Actualizar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+</div>
