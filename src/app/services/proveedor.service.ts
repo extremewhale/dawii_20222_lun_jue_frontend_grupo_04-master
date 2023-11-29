@@ -26,9 +26,6 @@ export class ProveedorService {
     }
   
     //para el crud
-    
-    
-
     consultaProveedor(nombre :string): Observable<any>{
       return this.http.get(baseCrudUrl + "listaProveedorPorNombreLike/" + nombre)
   }
