@@ -1,81 +1,87 @@
 <app-menu></app-menu>
 <div class="container" style="padding: 1% 10% 10% 10%">
-      <form class="content" (submit)="consultaProveedor()">
-
-                <div class="submit-form">
-                        <div class="row">
-                                <div class="col-lg-12">
-                                        <h2 class="btn btn-dark" >Consulta de Proveedor - PC02 Alejo</h2>
-                                </div>
-                        </div>
-                        <div class="row" style="margin-top: 1%">
-                                <div class="col-md-3">
-                                        <label for="razonsocial" class="form-label">Razón Social</label>
-                                        <input type="text" class="form-control" name="razonsocial" id="razonsocial" [(ngModel)]="razonsocial">
-                                </div>
-                                <div class="col-md-3">
-                                        <label for="ruc" class="form-label">RUC</label>
-                                        <input type="text" class="form-control" name="ruc" id="ruc" [(ngModel)]="ruc">
-
-                                </div>
-                                <div class="col-3" style="margin-top: 2%">
-                                        <div class="custom-control custom-switch">
-                                                <input type="checkbox" class="custom-control-input" id="estado" [(ngModel)]="estado" checked name="estado">
-                                                <label class="custom-control-label" for="estado">Estado</label>
-                                        </div>
-                                </div>
-                                <div class="col-md-6" style="margin-top: 2%">
-                                        <label for="pais">País</label>
-                                        <select id="pais" name="pais" class="form-control" [(ngModel)]="pais">
-                                                <option value="-1">Seleccione</option>
-                                                <option *ngFor="let aux of listPais" value="{{aux.idPais}}">
-                                                        {{aux.nombre}}
-                                                </option>
-                                        </select>
-                                </div>
-                                <div class="col-md-6" style="margin-top: 4%">
-                                        <div>
-                                                <button class="btn btn-success"> Filtrar </button>
-                                        </div>
-
-                                </div>
-
-                        </div>
-                        <div class="row" style="margin-top: 3%">
-                                <table class="table table-hover">
-                                        <thead>
-                                                <tr>
-                                                        <th>Id</th>
-                                                        <th>Razón Social</th>
-                                                        <th>Ruc</th>
-                                                        <th>Dirección</th>
-                                                        <th>Celular</th>
-                                                        <th>Contacto</th>
-                                                        <th>Estado</th>
-                                                        <th>Fecha de Registro</th>
-                                                        <th>País</th>
-                                                </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr *ngFor="let aux of proveedor">
-                                                        <td>{{aux.idProveedor}}</td>
-                                                        <td>{{aux.razonsocial}}</td>
-                                                        <td>{{aux.ruc}}</td>
-                                                        <td>{{aux.direccion}}</td>
-                                                        <td>{{aux.celular}}</td>
-                                                        <td>{{aux.contacto}}</td>
-                                                     <td>{{aux.estado ==1 ?"Activo":"Inactivo"}}</td> 
-                                                        <td>{{aux.fechaRegistro}}</td>
-                                                        <td>{{aux.pais!.nombre}}</td> 
-                                                </tr>
-                                        </tbody>
-
-                                </table>
-
-                        </div>
-
-                </div>
-
-
-      </form>
+  <form class="content" (submit)="consultaProveedor()">
+    <div class="submit-form">
+      
+      <div class="row" style="margin-top: 1%">
+        <div class="col-md-3">
+          <label for="razonsocial" class="form-label">Razón Social</label>
+          <input
+            type="text"
+            class="form-control"
+            name="razonsocial"
+            id="razonsocial"
+            [(ngModel)]="razonsocial"
+          />
+        </div>
+        <div class="col-md-3">
+          <label for="ruc" class="form-label">RUC</label>
+          <input
+            type="text"
+            class="form-control"
+            name="ruc"
+            id="ruc"
+            [(ngModel)]="ruc"
+          />
+        </div>
+        <div class="col-3" style="margin-top: 2%">
+          <div class="custom-control custom-switch">
+            <input
+              type="checkbox"
+              class="custom-control-input"
+              id="estado"
+              [(ngModel)]="estado"
+              checked
+              name="estado"
+            />
+            <label class="custom-control-label" for="estado">Estado</label>
+          </div>
+        </div>
+        <div class="col-md-6" style="margin-top: 2%">
+          <label for="pais">País</label>
+          <select id="pais" name="pais" class="form-control" [(ngModel)]="pais">
+            <option value="-1">Seleccione</option>
+            <option *ngFor="let aux of listPais" value="{{ aux.idPais }}">
+              {{ aux.nombre }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-6" style="margin-top: 4%">
+          <div>
+            <button class="btn btn-success">Filtrar</button>
+          </div>
+        </div>
+      </div>
+      <div class="row" style="margin-top: 3%">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Razón Social</th>
+              <th>Ruc</th>
+              <th>Dirección</th>
+              <th>Celular</th>
+              <th>Contacto</th>
+              <th>Estado</th>
+              <th>Fecha de Registro</th>
+              <th>País</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let aux of proveedor">
+              <td>{{ aux.idProveedor }}</td>
+              <td>{{ aux.razonsocial }}</td>
+              <td>{{ aux.ruc }}</td>
+              <td>{{ aux.direccion }}</td>
+              <td>{{ aux.celular }}</td>
+              <td>{{ aux.contacto }}</td>
+              <td>{{ aux.estado == 1 ? "Activo" : "Inactivo" }}</td>
+              <td>{{ aux.fechaRegistro }}</td>
+              <td>{{ aux.pais!.nombre }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </form>
 </div>
